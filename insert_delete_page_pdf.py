@@ -89,13 +89,21 @@ class PDFEditorApp:
                 self.insert_page(file_path, page_index=len(self.pdf_document))  # Insert at the end
                 self.show_page()  # Display the inserted page in the GUI
 
+    def delete_all(self):
+        if self.pdf_document is not None and len(self.pdf_document) == 1:
+            self.pdf_document.close()
+            self.root.quit()  # Exit the program
+
     def delete_page(self):
-        if self.pdf_document is not None and len(self.pdf_document) > 1:
-            self.pdf_document.delete_page(self.current_page)
-            self.temp_images.pop(self.current_page)
-            if self.current_page == len(self.pdf_document):
-                self.current_page -= 1
-            self.show_page()
+        if self.pdf_document is not None:
+            if len(self.pdf_document) > 0:
+                self.pdf_document.delete_page(self.current_page)
+                if self.current_page < len(self.temp_images):
+                    self.temp_images.pop(self.current_page)
+                if self.current_page == len(self.pdf_document):
+                    self.current_page -= 1
+                self.show_page()
+                self.delete_all()  # Check if it's time to delete the entire PDF and exit
 
     def insert_page(self, image_path, page_index=None):
         if image_path:
@@ -103,7 +111,7 @@ class PDFEditorApp:
                 page_index = self.current_page
             new_page = self.pdf_document.new_page(page_index, width=500, height=700)
             rect = fitz.Rect(0, 0, 500, 700)
-            
+
             # Extract rotation information from the image (EXIF) and apply it to the new page
             img = Image.open(image_path)
             exif_data = img._getexif()
@@ -116,7 +124,7 @@ class PDFEditorApp:
                             new_page.set_rotation(90)
                         elif value == 8:
                             new_page.set_rotation(270)
-            
+
             image_pixmap = fitz.Pixmap(image_path)
             new_page.insert_image(rect, pixmap=image_pixmap)
             temp_image = Image.open(image_path)
