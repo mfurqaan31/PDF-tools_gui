@@ -1,27 +1,74 @@
 import PyPDF2
+import tkinter as tk
+from tkinter import Entry, Button, filedialog
+import os
 
-def encrypt_pdf(input_pdf, output_pdf, password):
-    # Open the input PDF file
-    with open(input_pdf, 'rb') as file:
-        pdf_reader = PyPDF2.PdfReader(file)
-        
-        # Create a PDF writer object
+class PDFEncryptApp:
+    def __init__(self):
+        self.root = tk.Tk()
+        self.root.title("PDF Encryption")
+
+        self.pdf_file = None
+
+        self.create_gui()
+
+    def create_gui(self):
+        self.password_label = tk.Label(self.root, text="Enter Password:")
+        self.password_label.pack()
+
+        self.password_entry = Entry(self.root, show="*")
+        self.password_entry.pack(pady=5)
+
+        self.encrypt_button = Button(self.root, text="Encrypt PDF", command=self.encrypt_pdf, state=tk.DISABLED)
+        self.encrypt_button.pack(pady=10)
+
+        self.result_label = tk.Label(self.root, text="")
+        self.result_label.pack()
+
+    def select_pdf(self):
+        self.pdf_file = filedialog.askopenfilename(filetypes=[("PDF files", "*.pdf")])
+        if self.pdf_file:
+            self.password_entry.config(state=tk.NORMAL)
+            self.encrypt_button.config(state=tk.NORMAL)
+            self.root.deiconify()  # Display the GUI after selecting a PDF
+
+    def encrypt_pdf(self):
+        password = self.password_entry.get()
+
+        if not self.pdf_file:
+            self.result_label.config(text="Please select a PDF file first.")
+            return
+
+        pdf_reader = PyPDF2.PdfReader(self.pdf_file)
+
+        # Create a PdfWriter to write the encrypted PDF
         pdf_writer = PyPDF2.PdfWriter()
 
-        # Add all the pages from the input PDF to the writer
         for page in pdf_reader.pages:
             pdf_writer.add_page(page)
-        
-        # Encrypt the PDF with a password
+
+        # Encrypt the PDF with the provided password
         pdf_writer.encrypt(password)
 
-        # Write the encrypted PDF to the output file
-        with open(output_pdf, 'wb') as output_file:
-            pdf_writer.write(output_file)
+        default_output_file = f"encrypted_{os.path.basename(self.pdf_file)}"
+        save_path = filedialog.asksaveasfilename(
+            filetypes=[("PDF files", "*.pdf")],
+            defaultextension=".pdf",
+            initialfile=default_output_file,
+        )
+
+        if save_path:
+            with open(save_path, 'wb') as output_pdf:
+                pdf_writer.write(output_pdf)
+            self.result_label.config(text=f"PDF encrypted and saved as {save_path}.")
+        else:
+            self.result_label.config(text="PDF encryption canceled.")
+
+    def run(self):
+        self.root.withdraw()  # Hide the GUI window initially
+        self.select_pdf()
+        self.root.mainloop()
 
 if __name__ == "__main__":
-    input_pdf = 'input.pdf'
-    output_pdf = 'output.pdf'
-    password = 'apple'
-
-    encrypt_pdf(input_pdf, output_pdf, password)
+    app = PDFEncryptApp()
+    app.run()
