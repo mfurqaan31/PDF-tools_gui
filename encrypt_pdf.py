@@ -16,7 +16,7 @@ class PDFEncryptApp:
         self.password_label = tk.Label(self.root, text="Enter Password:")
         self.password_label.pack()
 
-        self.password_entry = Entry(self.root, show="*")
+        self.password_entry = Entry(self.root)
         self.password_entry.pack(pady=5)
 
         self.encrypt_button = Button(self.root, text="Encrypt PDF", command=self.encrypt_pdf, state=tk.DISABLED)
