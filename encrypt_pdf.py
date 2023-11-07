@@ -16,7 +16,7 @@ class PDFEncryptApp:
         self.password_label = tk.Label(self.root, text="Enter Password:")
         self.password_label.pack()
 
-        self.password_entry = Entry(self.root)
+        self.password_entry = Entry(self.root, show="*")
         self.password_entry.pack(pady=5)
 
         self.encrypt_button = Button(self.root, text="Encrypt PDF", command=self.encrypt_pdf, state=tk.DISABLED)
@@ -39,30 +39,40 @@ class PDFEncryptApp:
             self.result_label.config(text="Please select a PDF file first.")
             return
 
-        pdf_reader = PyPDF2.PdfReader(self.pdf_file)
-
         # Create a PdfWriter to write the encrypted PDF
         pdf_writer = PyPDF2.PdfWriter()
 
-        for page in pdf_reader.pages:
-            pdf_writer.add_page(page)
+        # Check if the PDF is already encrypted
+        is_encrypted = False
+        with open(self.pdf_file, 'rb') as pdf_file:
+            pdf_reader = PyPDF2.PdfReader(pdf_file)
+            is_encrypted = pdf_reader.is_encrypted
 
-        # Encrypt the PDF with the provided password
-        pdf_writer.encrypt(password)
-
-        default_output_file = f"encrypted_{os.path.basename(self.pdf_file)}"
-        save_path = filedialog.asksaveasfilename(
-            filetypes=[("PDF files", "*.pdf")],
-            defaultextension=".pdf",
-            initialfile=default_output_file,
-        )
-
-        if save_path:
-            with open(save_path, 'wb') as output_pdf:
-                pdf_writer.write(output_pdf)
-            self.result_label.config(text=f"PDF encrypted and saved as {save_path}.")
+        if is_encrypted:
+            self.result_label.config(text="PDF is already encrypted.")
         else:
-            self.result_label.config(text="PDF encryption canceled.")
+            # Open the input PDF file and add pages to the writer
+            with open(self.pdf_file, 'rb') as pdf_file:
+                pdf_reader = PyPDF2.PdfReader(pdf_file)
+                for page in pdf_reader.pages:
+                    pdf_writer.add_page(page)
+
+            # Encrypt the PDF with the provided password
+            pdf_writer.encrypt(password)
+
+            default_output_file = f"encrypted_{os.path.basename(self.pdf_file)}"
+            save_path = filedialog.asksaveasfilename(
+                filetypes=[("PDF files", "*.pdf")],
+                defaultextension=".pdf",
+                initialfile=default_output_file,
+            )
+
+            if save_path:
+                with open(save_path, 'wb') as output_pdf:
+                    pdf_writer.write(output_pdf)
+                self.result_label.config(text=f"PDF encrypted and saved as {save_path}.")
+            else:
+                self.result_label.config(text="PDF encryption canceled.")
 
     def run(self):
         self.root.withdraw()  # Hide the GUI window initially
