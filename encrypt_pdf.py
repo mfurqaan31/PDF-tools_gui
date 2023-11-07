@@ -16,7 +16,7 @@ class PDFEncryptApp:
         self.password_label = tk.Label(self.root, text="Enter Password:")
         self.password_label.pack()
 
-        self.password_entry = Entry(self.root, show="*")
+        self.password_entry = Entry(self.root)
         self.password_entry.pack(pady=5)
 
         self.encrypt_button = Button(self.root, text="Encrypt PDF", command=self.encrypt_pdf, state=tk.DISABLED)
@@ -36,7 +36,7 @@ class PDFEncryptApp:
         password = self.password_entry.get()
 
         if not self.pdf_file:
-            self.result_label.config(text="Please select a PDF file first.")
+            print("Please select a PDF file first.")
             return
 
         # Create a PdfWriter to write the encrypted PDF
@@ -49,7 +49,9 @@ class PDFEncryptApp:
             is_encrypted = pdf_reader.is_encrypted
 
         if is_encrypted:
-            self.result_label.config(text="PDF is already encrypted.")
+            print("PDF is already encrypted.")
+            self.root.destroy()
+
         else:
             # Open the input PDF file and add pages to the writer
             with open(self.pdf_file, 'rb') as pdf_file:
@@ -70,9 +72,11 @@ class PDFEncryptApp:
             if save_path:
                 with open(save_path, 'wb') as output_pdf:
                     pdf_writer.write(output_pdf)
-                self.result_label.config(text=f"PDF encrypted and saved as {save_path}.")
+                print(f"PDF encrypted and saved as {save_path}.")
+                self.root.destroy()  # Close the GUI window and terminate the program
             else:
-                self.result_label.config(text="PDF encryption canceled.")
+                print("PDF encryption canceled.")
+                self.root.destroy()
 
     def run(self):
         self.root.withdraw()  # Hide the GUI window initially
