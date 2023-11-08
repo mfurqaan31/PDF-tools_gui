@@ -8,21 +8,28 @@ class PDFEncryptApp:
         self.root = tk.Tk()
         self.root.title("PDF Encryption")
 
+        # Set the GUI window size
+        self.root.geometry("600x200")
+        self.root.resizable(False,False)
+        # Set the background color of the GUI window to black
+        self.root.configure(bg="black")
+
         self.pdf_file = None
 
         self.create_gui()
 
     def create_gui(self):
-        self.password_label = tk.Label(self.root, text="Enter Password:")
+        # Customize the labels and entry box appearance
+        self.password_label = tk.Label(self.root, text="Enter Password:", fg="white", bg="black")
         self.password_label.pack()
 
-        self.password_entry = Entry(self.root)
-        self.password_entry.pack(pady=5)
+        self.password_entry = Entry(self.root, bg="white")
+        self.password_entry.pack(pady=5, ipadx=150)  # Adjust the entry box size
 
         self.encrypt_button = Button(self.root, text="Encrypt PDF", command=self.encrypt_pdf, state=tk.DISABLED)
         self.encrypt_button.pack(pady=10)
 
-        self.result_label = tk.Label(self.root, text="")
+        self.result_label = tk.Label(self.root, text="", fg="white", bg="black")
         self.result_label.pack()
 
     def select_pdf(self):
