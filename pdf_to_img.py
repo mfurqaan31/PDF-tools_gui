@@ -4,8 +4,18 @@ import tkinter as tk
 from tkinter import filedialog
 import os
 import platform
+import PyPDF2
 
 def convert_pdf_to_images(pdf_path, image_folder):
+    is_encrypted = False
+    with open(pdf_path, 'rb') as pdf_file:
+        pdf_reader = PyPDF2.PdfReader(pdf_file)
+        is_encrypted = pdf_reader.is_encrypted
+
+    if is_encrypted:
+        print("PDF is already encrypted.")
+        exit()
+        
     pdf_document = fitz.open(pdf_path)
 
     for page_number in range(len(pdf_document)):
