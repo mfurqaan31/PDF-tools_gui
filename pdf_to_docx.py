@@ -2,10 +2,18 @@ import tkinter as tk
 from tkinter import filedialog
 from pdf2docx import Converter
 import os
-
+import PyPDF2
 
 def select_pdf_file_and_convert():
     file_path = filedialog.askopenfilename(filetypes=[("PDF Files", "*.pdf")])
+    is_encrypted = False
+    with open(file_path, 'rb') as pdf_file:
+        pdf_reader = PyPDF2.PdfReader(pdf_file)
+        is_encrypted = pdf_reader.is_encrypted
+
+    if is_encrypted:
+        print("PDF is already encrypted.")
+        exit()
     if file_path:
         # Extract the filename without extension
         file_name = os.path.splitext(os.path.basename(file_path))[0]
