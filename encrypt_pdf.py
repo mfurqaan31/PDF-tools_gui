@@ -34,6 +34,16 @@ class PDFEncryptApp:
 
     def select_pdf(self):
         self.pdf_file = filedialog.askopenfilename(filetypes=[("PDF files", "*.pdf")])
+        is_encrypted = False
+        with open(self.pdf_file, 'rb') as pdf_file:
+            pdf_reader = PyPDF2.PdfReader(pdf_file)
+            is_encrypted = pdf_reader.is_encrypted
+
+        if is_encrypted:
+            print("PDF is already encrypted.")
+            self.root.destroy()
+            exit()
+
         if self.pdf_file:
             self.password_entry.config(state=tk.NORMAL)
             self.encrypt_button.config(state=tk.NORMAL)
@@ -49,41 +59,32 @@ class PDFEncryptApp:
         # Create a PdfWriter to write the encrypted PDF
         pdf_writer = PyPDF2.PdfWriter()
 
-        # Check if the PDF is already encrypted
-        is_encrypted = False
+        #
+            # Open the input PDF file and add pages to the writer
         with open(self.pdf_file, 'rb') as pdf_file:
             pdf_reader = PyPDF2.PdfReader(pdf_file)
-            is_encrypted = pdf_reader.is_encrypted
-
-        if is_encrypted:
-            print("PDF is already encrypted.")
-            self.root.destroy()
-
-        else:
-            # Open the input PDF file and add pages to the writer
-            with open(self.pdf_file, 'rb') as pdf_file:
-                pdf_reader = PyPDF2.PdfReader(pdf_file)
-                for page in pdf_reader.pages:
-                    pdf_writer.add_page(page)
+            for page in pdf_reader.pages:
+                pdf_writer.add_page(page)
 
             # Encrypt the PDF with the provided password
-            pdf_writer.encrypt(password)
+        pdf_writer.encrypt(password)
 
-            default_output_file = f"encrypted_{os.path.basename(self.pdf_file)}"
-            save_path = filedialog.asksaveasfilename(
-                filetypes=[("PDF files", "*.pdf")],
-                defaultextension=".pdf",
-                initialfile=default_output_file,
+        default_output_file = f"encrypted_{os.path.basename(self.pdf_file)}"
+        save_path = filedialog.asksaveasfilename(
+            filetypes=[("PDF files", "*.pdf")],
+            defaultextension=".pdf",
+            initialfile=default_output_file,
             )
 
-            if save_path:
-                with open(save_path, 'wb') as output_pdf:
-                    pdf_writer.write(output_pdf)
-                print(f"PDF encrypted and saved as {save_path}.")
-                self.root.destroy()  # Close the GUI window and terminate the program
-            else:
-                print("PDF encryption canceled.")
-                self.root.destroy()
+        if save_path:
+            with open(save_path, 'wb') as output_pdf:
+                pdf_writer.write(output_pdf)
+            print(f"PDF encrypted and saved as {save_path}.")
+            self.root.destroy()  # Close the GUI window and terminate the program
+        else:
+            print("PDF encryption canceled.")
+            self.root.destroy()
+            #
 
     def run(self):
         self.root.withdraw()  # Hide the GUI window initially
