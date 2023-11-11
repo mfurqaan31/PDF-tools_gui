@@ -5,6 +5,7 @@ from tkinter import messagebox
 from PIL import Image, ImageTk, ExifTags
 import os
 from io import BytesIO
+import PyPDF2
 
 class PDFEditorApp:
     def __init__(self, root):
@@ -46,7 +47,16 @@ class PDFEditorApp:
 
     def load_pdf(self):
         file_path = filedialog.askopenfilename(filetypes=[("PDF files", "*.pdf")])
+        is_encrypted = False
+        with open(file_path, 'rb') as pdf_file:
+            pdf_reader = PyPDF2.PdfReader(pdf_file)
+            is_encrypted = pdf_reader.is_encrypted
 
+        if is_encrypted:
+            print("PDF is already encrypted.")
+            self.root.destroy()
+            exit()
+        
         if file_path:
             self.pdf_document = fitz.open(file_path)
             self.current_page = 0
