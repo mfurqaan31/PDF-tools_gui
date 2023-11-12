@@ -1,6 +1,7 @@
+# fixed encrypted pdf issue
 import fitz  # PyMuPDF
 import tkinter as tk
-from tkinter import filedialog
+from tkinter import filedialog, messagebox
 import os
 import platform
 
@@ -52,10 +53,29 @@ def move_down():
 def reorder_pdf_files(old_index, new_index):
     pdf_files_ordered.insert(new_index, pdf_files_ordered.pop(old_index))
 
+# Function to check if a PDF is encrypted
+def is_encrypted(pdf_path):
+    pdf_document = fitz.open(pdf_path)
+    encrypted = pdf_document.is_encrypted
+    pdf_document.close()
+    return encrypted
+
 # Function to merge the selected PDFs in the order specified
 def merge_pdfs():
     if not pdf_files_ordered:
         print("No PDFs selected. Nothing to merge.")
+        return
+
+    encrypted_files = []
+    for pdf_file in pdf_files_ordered:
+        if is_encrypted(pdf_file):
+            encrypted_files.append(os.path.basename(pdf_file))
+    
+    if encrypted_files:
+        message = f"{', '.join(encrypted_files)} {'is' if len(encrypted_files) == 1 else 'are'} encrypted."
+        print(message)
+        # Display the message in the GUI window
+        messagebox.showinfo("Encrypted PDFs", message)
         return
 
     # Determine the downloads directory based on the platform
