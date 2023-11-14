@@ -1,4 +1,4 @@
-# this needs to be fixed
+# this needs to be fixed the images are small, no white backgroung in the pdf
 import fitz
 import os
 import platform
