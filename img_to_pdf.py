@@ -1,3 +1,4 @@
+# this needs to be fixed
 from tkinter import Tk, filedialog
 from PIL import Image, ExifTags
 from io import BytesIO
