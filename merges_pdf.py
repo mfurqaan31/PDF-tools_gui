@@ -1,7 +1,7 @@
-# fixed encrypted pdf issue
+# added scrollbar
 import fitz  # PyMuPDF
 import tkinter as tk
-from tkinter import filedialog, messagebox
+from tkinter import filedialog, messagebox, Scrollbar
 import os
 import platform
 
@@ -114,8 +114,21 @@ else:
     root.configure(bg='black')  # Set the background color to black
     root.resizable(False, False)  # Make the window non-resizable
 
-    pdf_listbox = tk.Listbox(root, selectmode=tk.SINGLE, bg='white', fg='black', width=100, height=20)
-    pdf_listbox.pack(padx=20, pady=10)
+    # Create a frame to contain the listbox and scrollbar
+    frame = tk.Frame(root)
+    frame.pack()
+
+    # Create a vertical scrollbar
+    scrollbar = Scrollbar(frame, orient="vertical")
+
+    # Create a listbox with the scrollbar attached
+    pdf_listbox = tk.Listbox(frame, selectmode=tk.SINGLE, bg='white', fg='black', width=100, height=20, yscrollcommand=scrollbar.set)
+    pdf_listbox.grid(row=0, column=0)
+
+    # Attach the scrollbar to the listbox
+    scrollbar.config(command=pdf_listbox.yview)
+    scrollbar.grid(row=0, column=1, sticky="ns")
+
     pdf_listbox.config(highlightbackground='black')  # Set the listbox border color
 
     pdf_files_ordered = pdf_files.copy()  # To maintain the order of PDFs
