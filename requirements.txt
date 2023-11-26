@@ -1,2 +1,3 @@
 tkinter
 docx2pdf
+PyPDF2
