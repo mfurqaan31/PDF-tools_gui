@@ -1,7 +1,7 @@
 # Productivity-Tools
 
-img_to_pdf arranging needs to be fixed
+1) img_to_pdf arranging needs to be fixed
 
-pdf to docx lambda, micro is not getting displayed and there are overalpping images also
+2) pdf to docx lambda, micro is not getting displayed and there are overalpping images also
 
-decrypting pdf
+3) decrypting pdf
