@@ -2,3 +2,4 @@ tkinter
 docx2pdf
 PyPDF2
 Pillow
+fitz
