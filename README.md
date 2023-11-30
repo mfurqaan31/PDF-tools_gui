@@ -6,3 +6,5 @@ To do:
 2) pdf to docx lambda, micro is not getting displayed and there are overalpping images also
 
 3) decrypting pdf
+
+4) Split pdf
