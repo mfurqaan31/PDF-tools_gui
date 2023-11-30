@@ -1,10 +1,12 @@
 # Productivity-Tools
 
 To do:
-1) img_to_pdf arranging needs to be fixed
+1) img_to_pdf arranging needs to be fixed.
 
-2) pdf to docx lambda, micro is not getting displayed and there are overalpping images also
+2) pdf to docx lambda, micro is not getting displayed and there are overalpping images also.
 
-3) decrypting pdf
+3) decrypting pdf.
 
-4) Split pdf
+4) Split pdf.
+
+5) insert_delete_page_pdf.py the page of pdf must be alligned in the center and when closing the gui window without selecting the pdf gives error.
