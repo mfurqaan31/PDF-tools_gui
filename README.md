@@ -10,3 +10,5 @@ To do:
 4) Split pdf.
 
 5) insert_delete_page_pdf.py the page of pdf must be alligned in the center and when closing the gui window without selecting the pdf gives error.
+
+6) Website must work on mobile
