@@ -1,4 +1,3 @@
-# added scrollbar and multiple add also
 import fitz  # PyMuPDF
 import tkinter as tk
 from tkinter import filedialog, messagebox, Scrollbar
@@ -124,6 +123,9 @@ else:
 
     # Create a vertical scrollbar
     scrollbar = Scrollbar(frame, orient="vertical")
+
+    root.bind("<Up>", lambda event: move_up())
+    root.bind("<Down>", lambda event: move_down())
 
     # Create a listbox with the scrollbar attached
     pdf_listbox = tk.Listbox(frame, selectmode=tk.SINGLE, bg='white', fg='black', width=100, height=20, yscrollcommand=scrollbar.set)
