@@ -1,4 +1,4 @@
-# added scrollbar
+# added scrollbar and multiple add also
 import fitz  # PyMuPDF
 import tkinter as tk
 from tkinter import filedialog, messagebox, Scrollbar
@@ -10,11 +10,15 @@ pdf_files_ordered = []
 
 # Function to add a new PDF to the listbox
 def add_pdf():
-    new_pdf = filedialog.askopenfilename(title="Select PDF File", filetypes=[("PDF files", "*.pdf")])
+    new_pdf = list(filedialog.askopenfilenames(
+    title="Select PDF Files",
+    filetypes=[("PDF files", "*.pdf")]
+))
     if new_pdf:
-        pdf_files.append(new_pdf)
-        pdf_files_ordered.append(new_pdf)
-        pdf_listbox.insert(tk.END, os.path.basename(new_pdf))
+        for i in new_pdf:
+            pdf_files.append(i)
+            pdf_files_ordered.append(i)
+            pdf_listbox.insert(tk.END, os.path.basename(i))
 
 # Function to remove the selected PDF from the listbox
 def remove_pdf():
