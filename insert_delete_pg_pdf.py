@@ -19,21 +19,36 @@ class PDFEditorApp:
 
     def create_gui(self):
         self.button_frame = tk.Frame(self.root, bg="black")
-        self.button_frame.pack(side=tk.RIGHT, fill=tk.Y)
+        self.button_frame.pack(side=tk.RIGHT, fill=tk.Y, padx=10, pady=10)
 
-        self.prev_button = tk.Button(self.button_frame, text="Previous", command=self.prev_page, bg="black", fg="white")
-        self.next_button = tk.Button(self.button_frame, text="Next", command=self.next_page, bg="black", fg="white")
-        self.add_page_button = tk.Button(self.button_frame, text="Add image here", command=self.add_page, bg="black", fg="white")
-        self.add_to_last_page_button = tk.Button(self.button_frame, text="Add image to the last Page", command=self.add_to_last_page, bg="black", fg="white")
+        self.prev_button = tk.Button(self.button_frame, text="Previous Page", command=self.prev_page, bg="black", fg="white")
+        self.next_button = tk.Button(self.button_frame, text="Next Page", command=self.next_page, bg="black", fg="white")
+        self.add_page_button = tk.Button(self.button_frame, text="Add Page", command=self.add_page, bg="black", fg="white")
+        self.add_to_last_page_button = tk.Button(self.button_frame, text="Add to Last Page", command=self.add_to_last_page, bg="black", fg="white")
         self.delete_page_button = tk.Button(self.button_frame, text="Delete Page", command=self.delete_page, bg="black", fg="white")
         self.make_pdf_button = tk.Button(self.button_frame, text="Make PDF", command=self.save_pdf, bg="black", fg="white")
 
-        self.prev_button.pack(fill=tk.X)
-        self.next_button.pack(fill=tk.X)
-        self.add_page_button.pack(fill=tk.X)
-        self.add_to_last_page_button.pack(fill=tk.X)
-        self.delete_page_button.pack(fill=tk.X)
-        self.make_pdf_button.pack(fill=tk.X)
+        self.prev_button.pack(fill=tk.X, pady=5)
+        self.next_button.pack(fill=tk.X, pady=5)
+        self.add_page_button.pack(fill=tk.X, pady=5)
+        self.add_to_last_page_button.pack(fill=tk.X, pady=5)
+        self.delete_page_button.pack(fill=tk.X, pady=5)
+        self.make_pdf_button.pack(fill=tk.X, pady=5)
+
+        self.go_to_page_button = tk.Button(self.button_frame, text="Go to Page", command=self.go_to_page, bg="black", fg="white")
+        self.go_to_page_button.pack(side=tk.BOTTOM, fill=tk.X, pady=5)
+        
+        self.page_entry_var = tk.StringVar()
+        self.page_entry = tk.Entry(self.button_frame, textvariable=self.page_entry_var, bg="black", fg="white")
+        self.page_entry.pack(side=tk.BOTTOM, fill=tk.X, pady=5)
+
+        self.page_entry_label = tk.Label(self.button_frame, text="Enter Page Number:", bg="black", fg="white")
+        self.page_entry_label.pack(side=tk.BOTTOM, fill=tk.X, pady=5)
+
+        
+
+        self.page_number_label = tk.Label(self.button_frame, text="Page 1", bg="black", fg="white")
+        self.page_number_label.pack(side=tk.BOTTOM, fill=tk.X, pady=5)
 
         self.canvas = tk.Canvas(self.root, bg="black")
         self.canvas.pack(side=tk.LEFT, expand=True, fill=tk.BOTH)
@@ -54,6 +69,7 @@ class PDFEditorApp:
             self.pdf_document = fitz.open(file_path)
             self.current_page = 0
             self.show_page()
+            self.update_page_number_label()
             self.root.deiconify()
 
     def show_page(self):
@@ -68,15 +84,35 @@ class PDFEditorApp:
             self.canvas.config(width=canvas_width, height=canvas_height)
             self.canvas.create_image(0, 0, anchor=tk.NW, image=self.tk_image)
 
+    def update_page_number_label(self):
+        if self.pdf_document is not None:
+            total_pages = len(self.pdf_document)
+            self.page_number_label.config(text=f"Page {self.current_page + 1}/{total_pages}")
+
     def prev_page(self):
         if self.current_page > 0:
             self.current_page -= 1
             self.show_page()
+            self.update_page_number_label()
 
     def next_page(self):
         if self.pdf_document is not None and self.current_page < len(self.pdf_document) - 1:
             self.current_page += 1
             self.show_page()
+            self.update_page_number_label()
+
+    def go_to_page(self):
+        if self.pdf_document is not None:
+            try:
+                page_number = int(self.page_entry_var.get())
+                if 1 <= page_number <= len(self.pdf_document):
+                    self.current_page = page_number - 1
+                    self.show_page()
+                    self.update_page_number_label()
+                else:
+                    messagebox.showwarning("Invalid Page Number", f"Please enter a page number between 1 and {len(self.pdf_document)}.")
+            except ValueError:
+                messagebox.showwarning("Invalid Input", "Please enter a valid page number.")
 
     def add_page(self):
         if self.pdf_document is not None:
@@ -84,6 +120,7 @@ class PDFEditorApp:
             if file_path:
                 self.insert_page(file_path)
                 self.show_page()
+                self.update_page_number_label()
 
     def add_to_last_page(self):
         if self.pdf_document is not None:
@@ -91,6 +128,7 @@ class PDFEditorApp:
             if file_path:
                 self.insert_page(file_path, page_index=len(self.pdf_document))
                 self.show_page()
+                self.update_page_number_label()
 
     def delete_all(self):
         if self.pdf_document is not None and len(self.pdf_document) == 1:
@@ -106,6 +144,7 @@ class PDFEditorApp:
                 if self.current_page == len(self.pdf_document):
                     self.current_page -= 1
                 self.show_page()
+                self.update_page_number_label()
                 self.delete_all()
 
     def insert_page(self, image_path, page_index=None):
