@@ -1,49 +1,42 @@
-import fitz  # PyMuPDF
+import fitz
 import tkinter as tk
-from tkinter import filedialog
-from tkinter import messagebox
+from tkinter import filedialog, messagebox
 from PIL import Image, ImageTk, ExifTags
 import os
-from io import BytesIO
 import PyPDF2
 
 class PDFEditorApp:
     def __init__(self, root):
         self.root = root
         self.root.title("PDF Editor")
-        self.root.configure(bg="black")  # Set the background color to black
+        self.root.configure(bg="black")
 
         self.pdf_document = None
         self.current_page = 0
-        self.temp_images = []  # List to hold temporary images to display
+        self.temp_images = []
 
         self.create_gui()
 
     def create_gui(self):
-        # Create navigation buttons
-        self.prev_button = tk.Button(self.root, text="Previous Page", command=self.prev_page, bg="black", fg="white")
-        self.next_button = tk.Button(self.root, text="Next Page", command=self.next_page, bg="black", fg="white")
-        self.add_page_button = tk.Button(self.root, text="Add Page", command=self.add_page, bg="black", fg="white")
-        self.add_to_last_page_button = tk.Button(self.root, text="Add to Last Page", command=self.add_to_last_page, bg="black", fg="white")
-        self.delete_page_button = tk.Button(self.root, text="Delete Page", command=self.delete_page, bg="black", fg="white")
-        self.make_pdf_button = tk.Button(self.root, text="Make PDF", command=self.save_pdf, bg="black", fg="white")
+        self.button_frame = tk.Frame(self.root, bg="black")
+        self.button_frame.pack(side=tk.RIGHT, fill=tk.Y)
 
-        # Create a canvas to display the PDF page
-        self.canvas = tk.Canvas(self.root, width=400, height=600, bg="black")  # Set canvas background color to black
+        self.prev_button = tk.Button(self.button_frame, text="Previous", command=self.prev_page, bg="black", fg="white")
+        self.next_button = tk.Button(self.button_frame, text="Next", command=self.next_page, bg="black", fg="white")
+        self.add_page_button = tk.Button(self.button_frame, text="Add image here", command=self.add_page, bg="black", fg="white")
+        self.add_to_last_page_button = tk.Button(self.button_frame, text="Add image to the last Page", command=self.add_to_last_page, bg="black", fg="white")
+        self.delete_page_button = tk.Button(self.button_frame, text="Delete Page", command=self.delete_page, bg="black", fg="white")
+        self.make_pdf_button = tk.Button(self.button_frame, text="Make PDF", command=self.save_pdf, bg="black", fg="white")
+
+        self.prev_button.pack(fill=tk.X)
+        self.next_button.pack(fill=tk.X)
+        self.add_page_button.pack(fill=tk.X)
+        self.add_to_last_page_button.pack(fill=tk.X)
+        self.delete_page_button.pack(fill=tk.X)
+        self.make_pdf_button.pack(fill=tk.X)
+
+        self.canvas = tk.Canvas(self.root, bg="black")
         self.canvas.pack(side=tk.LEFT, expand=True, fill=tk.BOTH)
-
-        # Create a vertical scrollbar
-        self.scrollbar = tk.Scrollbar(self.root, orient=tk.VERTICAL, command=self.canvas.yview, bg="black")  # Set scrollbar background color to black
-        self.scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
-        self.canvas.config(yscrollcommand=self.scrollbar.set)
-
-        # Pack buttons
-        self.prev_button.pack()
-        self.next_button.pack()
-        self.add_page_button.pack()
-        self.add_to_last_page_button.pack()
-        self.delete_page_button.pack()
-        self.make_pdf_button.pack()
 
     def load_pdf(self):
         file_path = filedialog.askopenfilename(filetypes=[("PDF files", "*.pdf")])
@@ -56,12 +49,12 @@ class PDFEditorApp:
             print("PDF is already encrypted.")
             self.root.destroy()
             exit()
-        
+
         if file_path:
             self.pdf_document = fitz.open(file_path)
             self.current_page = 0
             self.show_page()
-            self.root.deiconify()  # Show the GUI window after selecting a PDF
+            self.root.deiconify()
 
     def show_page(self):
         if self.pdf_document is not None:
@@ -70,9 +63,9 @@ class PDFEditorApp:
             img = Image.frombytes("RGB", [pix.width, pix.height], pix.samples)
 
             self.tk_image = ImageTk.PhotoImage(img)
-            canvas_width = img.width
-            canvas_height = img.height
-            self.canvas.config(width=canvas_width, height=canvas_height)  # Adjust canvas size
+            canvas_width = self.root.winfo_width()
+            canvas_height = self.root.winfo_height()
+            self.canvas.config(width=canvas_width, height=canvas_height)
             self.canvas.create_image(0, 0, anchor=tk.NW, image=self.tk_image)
 
     def prev_page(self):
@@ -90,19 +83,19 @@ class PDFEditorApp:
             file_path = filedialog.askopenfilename(filetypes=[("Image files", "*.jpg *.jpeg *.png *.bmp *.gif *.tiff")])
             if file_path:
                 self.insert_page(file_path)
-                self.show_page()  # Display the inserted page in the GUI
+                self.show_page()
 
     def add_to_last_page(self):
         if self.pdf_document is not None:
             file_path = filedialog.askopenfilename(filetypes=[("Image files", "*.jpg *.jpeg *.png *.bmp *.gif *.tiff")])
             if file_path:
-                self.insert_page(file_path, page_index=len(self.pdf_document))  # Insert at the end
-                self.show_page()  # Display the inserted page in the GUI
+                self.insert_page(file_path, page_index=len(self.pdf_document))
+                self.show_page()
 
     def delete_all(self):
         if self.pdf_document is not None and len(self.pdf_document) == 1:
             self.pdf_document.close()
-            self.root.quit()  # Exit the program
+            self.root.quit()
 
     def delete_page(self):
         if self.pdf_document is not None:
@@ -113,7 +106,7 @@ class PDFEditorApp:
                 if self.current_page == len(self.pdf_document):
                     self.current_page -= 1
                 self.show_page()
-                self.delete_all()  # Check if it's time to delete the entire PDF and exit
+                self.delete_all()
 
     def insert_page(self, image_path, page_index=None):
         if image_path:
@@ -122,7 +115,6 @@ class PDFEditorApp:
             new_page = self.pdf_document.new_page(page_index, width=500, height=700)
             rect = fitz.Rect(0, 0, 500, 700)
 
-            # Extract rotation information from the image (EXIF) and apply it to the new page
             img = Image.open(image_path)
             exif_data = img._getexif()
             if exif_data:
@@ -154,11 +146,11 @@ class PDFEditorApp:
                 self.pdf_document.save(save_path)
                 self.pdf_document.close()
                 messagebox.showinfo("PDF Saved", "PDF has been saved successfully.")
-                self.root.quit()  # Exit the program
+                self.root.quit()
 
 if __name__ == "__main__":
     root = tk.Tk()
     app = PDFEditorApp(root)
-    app.root.withdraw()  # Hide the GUI window initially
+    app.root.withdraw()
     app.load_pdf()
     root.mainloop()
