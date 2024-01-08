@@ -1,4 +1,3 @@
-# added pg number still fit to window needs to be fixed
 import fitz
 import tkinter as tk
 from tkinter import filedialog, messagebox
