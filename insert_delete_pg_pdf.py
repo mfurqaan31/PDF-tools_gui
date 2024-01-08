@@ -1,3 +1,4 @@
+# added pg number still fit to window needs to be fixed
 import fitz
 import tkinter as tk
 from tkinter import filedialog, messagebox
@@ -20,6 +21,9 @@ class PDFEditorApp:
     def create_gui(self):
         self.button_frame = tk.Frame(self.root, bg="black")
         self.button_frame.pack(side=tk.RIGHT, fill=tk.Y, padx=10, pady=10)
+        self.root.bind("<Left>", lambda event: self.prev_page())
+        self.root.bind("<Right>", lambda event: self.next_page())
+        self.root.bind("<Return>", lambda event: self.go_to_page())
 
         self.prev_button = tk.Button(self.button_frame, text="Previous Page", command=self.prev_page, bg="black", fg="white")
         self.next_button = tk.Button(self.button_frame, text="Next Page", command=self.next_page, bg="black", fg="white")
@@ -37,6 +41,7 @@ class PDFEditorApp:
 
         self.go_to_page_button = tk.Button(self.button_frame, text="Go to Page", command=self.go_to_page, bg="black", fg="white")
         self.go_to_page_button.pack(side=tk.BOTTOM, fill=tk.X, pady=5)
+        
         
         self.page_entry_var = tk.StringVar()
         self.page_entry = tk.Entry(self.button_frame, textvariable=self.page_entry_var, bg="black", fg="white")
@@ -109,10 +114,13 @@ class PDFEditorApp:
                     self.current_page = page_number - 1
                     self.show_page()
                     self.update_page_number_label()
+                    self.page_entry.delete(0, tk.END)
                 else:
                     messagebox.showwarning("Invalid Page Number", f"Please enter a page number between 1 and {len(self.pdf_document)}.")
+                    self.page_entry.delete(0, tk.END)
             except ValueError:
                 messagebox.showwarning("Invalid Input", "Please enter a valid page number.")
+                self.page_entry.delete(0, tk.END)
 
     def add_page(self):
         if self.pdf_document is not None:
