@@ -14,3 +14,5 @@ To do:
 6) Website must work on mobile
 
 7) No need of pdf_to_docx.py code
+
+8) do only merging, splitting, pdf to image, insert or delete page.
