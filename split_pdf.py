@@ -10,12 +10,15 @@ class PDFSplitterApp:
         self.master = master
         self.master.title("PDF Splitter")
 
-        # Create a canvas to contain the GUI widgets
-        self.canvas = tk.Canvas(master, borderwidth=0, background="#ffffff")
+        # Set background color to black
+        self.master.configure(bg="black")
+
+        # Create a canvas to contain the GUI widgets with a white background
+        self.canvas = tk.Canvas(master, borderwidth=0, background="black", highlightthickness=0)
         self.canvas.pack(side="left", fill="both", expand=True)
 
-        # Create a frame to contain the scrollable content
-        self.frame = tk.Frame(self.canvas, background="#ffffff")
+        # Create a frame to contain the scrollable content with a white background
+        self.frame = tk.Frame(self.canvas, background="black")
 
         # Create a scrollbar and attach it to the canvas
         self.scrollbar = tk.Scrollbar(master, orient="vertical", command=self.canvas.yview)
@@ -23,27 +26,28 @@ class PDFSplitterApp:
         self.canvas.configure(yscrollcommand=self.scrollbar.set)
 
         # Assign the frame to the canvas
-        self.frame_window = self.canvas.create_window((0, 0), window=self.frame, anchor="nw")
+        self.frame_window = self.canvas.create_window((0, 0), window=self.frame, anchor="center")
 
         # Variables
         self.file_path = None
         self.page_ranges = []
 
-        # Display PDF Name
-        self.pdf_name_label = tk.Label(self.frame, text="")
-        self.pdf_name_label.grid(row=0, column=0, padx=10, pady=10)
+        # Display PDF Name with white text, centered and larger font
+        self.pdf_name_label = tk.Label(self.frame, text="", bg="black", fg="white", font=("Helvetica", 16))
+        self.pdf_name_label.grid(row=0, column=0, pady=20, sticky="n")
 
         # Page Ranges
-        tk.Label(self.frame, text="Page Ranges:").grid(row=1, column=0, pady=10)
-        self.add_range_button = tk.Button(self.frame, text="Add Range", command=self.add_page_range)
+        tk.Label(self.frame, text="Page Ranges:", bg="black", fg="white", font=("Helvetica", 14)).grid(row=1, column=0, pady=10)
+        self.add_range_button = tk.Button(self.frame, text="Add Range", command=self.add_page_range, bg="black", fg="white", font=("Helvetica", 14))
         self.add_range_button.grid(row=1, column=1, pady=10)
 
         # Merge Option
         self.merge_var = tk.BooleanVar()
-        tk.Checkbutton(self.frame, text="Merge all ranges into a single PDF", variable=self.merge_var).grid(row=2, column=0, columnspan=3, pady=10)
+        self.merge_checkbox = tk.Checkbutton(self.frame, text="Merge all ranges into a single PDF", variable=self.merge_var, bg="black", fg="white", font=("Helvetica", 14), selectcolor="black")
+        self.merge_checkbox.grid(row=2, column=0, columnspan=3, pady=10)
 
-        # Split Button
-        tk.Button(self.frame, text="Split PDF", command=self.split_pdf).grid(row=3, column=0, columnspan=3, pady=10)
+        # Split Button with white text, centered and larger font
+        tk.Button(self.frame, text="Split PDF", command=self.split_pdf, bg="black", fg="white", font=("Helvetica", 16)).grid(row=3, column=0, columnspan=3, pady=20)
 
         # Bind the canvas to the scrollable area
         self.frame.bind("<Configure>", self.on_frame_configure)
@@ -71,36 +75,35 @@ class PDFSplitterApp:
             print("Error", "Please select a PDF file.")
             exit()
 
-
     def add_page_range(self):
-        range_frame = tk.Frame(self.frame)
+        range_frame = tk.Frame(self.frame, bg="black")
         range_frame.grid(row=len(self.page_ranges) + 4, column=0, columnspan=4, pady=5)
 
-        tk.Label(range_frame, text=f"Range {len(self.page_ranges) + 1}:").grid(row=0, column=0, pady=5)
+        tk.Label(range_frame, text=f"Range {len(self.page_ranges) + 1}:", bg="black", fg="white", font=("Helvetica", 14)).grid(row=0, column=0, pady=5)
         from_page_entry = tk.Entry(range_frame)
         to_page_entry = tk.Entry(range_frame)
         from_page_entry.grid(row=0, column=1, padx=5)
         to_page_entry.grid(row=0, column=2, padx=5)
 
         # Delete button
-        delete_button = tk.Button(range_frame, text="Delete", command=lambda frame=range_frame: self.delete_page_range(frame))
+        delete_button = tk.Button(range_frame, text="Delete", command=lambda frame=range_frame: self.delete_page_range(frame), bg="black", fg="white", font=("Helvetica", 14))
         delete_button.grid(row=0, column=3, padx=5)
 
         self.page_ranges.append((from_page_entry, to_page_entry, range_frame))
 
     def delete_page_range(self, frame):
-        # Find the index of the frame in the grid
-        grid_info = frame.grid_info()
-        row = grid_info['row']
-
-        # Remove the frame and corresponding page range
-        self.page_ranges.pop(row - 4)
-        frame.destroy()
-
-        # Update the labels for the remaining ranges
+        # Find the corresponding range in the list
         for i, (_, _, f) in enumerate(self.page_ranges):
-            f.grid(row=i + 4, column=0, columnspan=4, pady=5)
-            f.winfo_children()[0].config(text=f"Range {i + 1}:")
+            if f == frame:
+                # Remove the frame and corresponding page range
+                self.page_ranges.pop(i)
+                frame.destroy()
+
+                # Update the labels for the remaining ranges
+                for j, (_, _, f) in enumerate(self.page_ranges):
+                    f.grid(row=j + 4, column=0, columnspan=4, pady=5)
+                    f.winfo_children()[0].config(text=f"Range {j + 1}:")
+                break
 
     def split_pdf(self):
         if not self.file_path:
@@ -162,7 +165,7 @@ class PDFSplitterApp:
 
         messagebox.showinfo("Success", "PDF(s) successfully split.")
 
-if __name__ == "__main__":
-    root = tk.Tk()
-    app = PDFSplitterApp(root)
-    root.mainloop()
+
+root = tk.Tk()
+app = PDFSplitterApp(root)
+root.mainloop()
