@@ -1,3 +1,4 @@
+# created file dialog and output file has the pdf name
 import tkinter as tk
 from tkinter import filedialog, messagebox
 from PyPDF2 import PdfReader, PdfWriter
@@ -58,7 +59,12 @@ class PDFSplitterApp:
 
         output_folder = os.path.join(os.path.expanduser("~"), "Downloads")
         os.makedirs(output_folder, exist_ok=True)
-        output_folder_path = os.path.join(output_folder, "split_pdf_output")
+        
+        # Extract filename without extension
+        file_name = os.path.splitext(os.path.basename(self.file_path))[0]
+        
+        # Modify output folder name
+        output_folder_path = os.path.join(output_folder, f"split_pages_{file_name}")
         os.makedirs(output_folder_path, exist_ok=True)
 
         pdf_reader = PdfReader(self.file_path)
@@ -90,13 +96,13 @@ class PDFSplitterApp:
                 for page_num in range(len(input_pdf_reader.pages)):
                     merged_pdf_writer.add_page(input_pdf_reader.pages[page_num])
 
-            merged_output_path = os.path.join(output_folder, "Merged_PDF.pdf")
+            merged_output_path = os.path.join(output_folder, f"Merged_Split_{file_name}.pdf")
             with open(merged_output_path, "wb") as merged_output_file:
                 merged_pdf_writer.write(merged_output_file)
 
             shutil.rmtree(output_folder_path)  # Remove the individual PDFs if merged
         else:
-            zip_filename = os.path.join(output_folder, "Split_PDFs.zip")
+            zip_filename = os.path.join(output_folder, f"Split_PDFs_{file_name}.zip")
             with ZipFile(zip_filename, 'w') as zipf:
                 for i in range(len(self.page_ranges)):
                     pdf_filename = os.path.join(output_folder_path, f"Range_{i + 1}.pdf")
