@@ -13,13 +13,9 @@ class PDFSplitterApp:
         self.file_path = None
         self.page_ranges = []
 
-        # File Selection
-        tk.Label(master, text="Select PDF file:").grid(row=0, column=0, pady=10)
-        tk.Button(master, text="Browse", command=self.browse_pdf).grid(row=0, column=1, pady=10)
-
         # Display PDF Name
         self.pdf_name_label = tk.Label(master, text="")
-        self.pdf_name_label.grid(row=0, column=2, padx=10, pady=10)
+        self.pdf_name_label.grid(row=0, column=0, padx=10, pady=10)
 
         # Page Ranges
         tk.Label(master, text="Page Ranges:").grid(row=1, column=0, pady=10)
@@ -33,11 +29,15 @@ class PDFSplitterApp:
         # Split Button
         tk.Button(master, text="Split PDF", command=self.split_pdf).grid(row=3, column=0, columnspan=3, pady=10)
 
-    def browse_pdf(self):
+    def select_and_open_pdf(self):
         file_path = filedialog.askopenfilename(filetypes=[("PDF files", "*.pdf")])
         if file_path:
             self.file_path = file_path
             self.pdf_name_label.config(text=os.path.basename(self.file_path))
+            self.show_main_window()
+
+    def show_main_window(self):
+        self.master.deiconify()
 
     def add_page_range(self):
         range_frame = tk.Frame(self.master)
@@ -109,4 +109,12 @@ class PDFSplitterApp:
 if __name__ == "__main__":
     root = tk.Tk()
     app = PDFSplitterApp(root)
+    
+    # Hide the main window initially
+    root.iconify()
+    
+    # Call the function to select and open the PDF
+    app.select_and_open_pdf()
+    
+    # Start the main loop
     root.mainloop()
