@@ -1,4 +1,3 @@
-# added scrollbar
 import tkinter as tk
 from tkinter import filedialog, messagebox
 from PyPDF2 import PdfReader, PdfWriter
@@ -67,14 +66,15 @@ class PDFSplitterApp:
         if file_path:
             self.file_path = file_path
             self.pdf_name_label.config(text=os.path.basename(self.file_path))
-            self.show_main_window()
+            self.master.deiconify()
+        else:
+            print("Error", "Please select a PDF file.")
+            exit()
 
-    def show_main_window(self):
-        self.master.deiconify()
 
     def add_page_range(self):
         range_frame = tk.Frame(self.frame)
-        range_frame.grid(row=len(self.page_ranges) + 4, column=0, columnspan=3, pady=5)
+        range_frame.grid(row=len(self.page_ranges) + 4, column=0, columnspan=4, pady=5)
 
         tk.Label(range_frame, text=f"Range {len(self.page_ranges) + 1}:").grid(row=0, column=0, pady=5)
         from_page_entry = tk.Entry(range_frame)
@@ -82,12 +82,30 @@ class PDFSplitterApp:
         from_page_entry.grid(row=0, column=1, padx=5)
         to_page_entry.grid(row=0, column=2, padx=5)
 
-        self.page_ranges.append((from_page_entry, to_page_entry))
+        # Delete button
+        delete_button = tk.Button(range_frame, text="Delete", command=lambda frame=range_frame: self.delete_page_range(frame))
+        delete_button.grid(row=0, column=3, padx=5)
+
+        self.page_ranges.append((from_page_entry, to_page_entry, range_frame))
+
+    def delete_page_range(self, frame):
+        # Find the index of the frame in the grid
+        grid_info = frame.grid_info()
+        row = grid_info['row']
+
+        # Remove the frame and corresponding page range
+        self.page_ranges.pop(row - 4)
+        frame.destroy()
+
+        # Update the labels for the remaining ranges
+        for i, (_, _, f) in enumerate(self.page_ranges):
+            f.grid(row=i + 4, column=0, columnspan=4, pady=5)
+            f.winfo_children()[0].config(text=f"Range {i + 1}:")
 
     def split_pdf(self):
         if not self.file_path:
-            messagebox.showerror("Error", "Please select a PDF file.")
-            return
+            print("Error", "Please select a PDF file.")
+            exit()
 
         output_folder = os.path.join(os.path.expanduser("~"), "Downloads")
         os.makedirs(output_folder, exist_ok=True)
@@ -101,7 +119,7 @@ class PDFSplitterApp:
 
         pdf_reader = PdfReader(self.file_path)
 
-        for i, (from_page_entry, to_page_entry) in enumerate(self.page_ranges):
+        for i, (from_page_entry, to_page_entry, _) in enumerate(self.page_ranges):
             try:
                 from_page = int(from_page_entry.get())
                 to_page = int(to_page_entry.get())
@@ -121,7 +139,7 @@ class PDFSplitterApp:
 
         if self.merge_var.get():
             merged_pdf_writer = PdfWriter()
-            for i in range(len(self.page_ranges)):
+            for i, (from_page_entry, to_page_entry, _) in enumerate(self.page_ranges):
                 input_file_path = os.path.join(output_folder_path, f"Range_{i + 1}.pdf")
                 input_pdf_reader = PdfReader(input_file_path)
 
@@ -136,7 +154,7 @@ class PDFSplitterApp:
         else:
             zip_filename = os.path.join(output_folder, f"Split_PDFs_{file_name}.zip")
             with ZipFile(zip_filename, 'w') as zipf:
-                for i in range(len(self.page_ranges)):
+                for i, (from_page_entry, to_page_entry, _) in enumerate(self.page_ranges):
                     pdf_filename = os.path.join(output_folder_path, f"Range_{i + 1}.pdf")
                     zipf.write(pdf_filename, os.path.basename(pdf_filename))
 
