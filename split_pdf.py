@@ -131,6 +131,7 @@ class PDFSplitterApp:
                     raise ValueError("Invalid page range")
             except ValueError:
                 messagebox.showerror("Error", f"Invalid page range for Range {i + 1}.")
+                shutil.rmtree(output_folder_path)
                 return
 
             pdf_writer = PdfWriter()
@@ -165,6 +166,7 @@ class PDFSplitterApp:
             shutil.rmtree(output_folder_path)  # Remove the individual PDFs if zipped
 
         messagebox.showinfo("Success", "PDF(s) successfully split.")
+        exit()
 
 
 root = tk.Tk()
