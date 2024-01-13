@@ -60,6 +60,12 @@ class PDFEditorApp:
     def load_pdf(self):
         file_path = filedialog.askopenfilename(filetypes=[("PDF files", "*.pdf")])
         is_encrypted = False
+
+        if not file_path:
+            print("No PDF selected.")
+            self.root.destroy()
+            exit()
+        
         with open(file_path, 'rb') as pdf_file:
             pdf_reader = PyPDF2.PdfReader(pdf_file)
             is_encrypted = pdf_reader.is_encrypted

@@ -11,3 +11,9 @@ check all the progs i they run on all os.
 in this split_pdf code if there is invalid range it makes the folder so fix that also.
 
 Do this quickly
+
+check the following:
+
+if no pdf selected it must exit
+
+if pdf is encrypted it must quit
