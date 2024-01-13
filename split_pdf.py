@@ -55,6 +55,7 @@ class PDFSplitterApp:
 
         # Hide the main window initially
         self.master.iconify()
+        self.master.withdraw()
 
         # Call the function to select and open the PDF
         self.select_and_open_pdf()
