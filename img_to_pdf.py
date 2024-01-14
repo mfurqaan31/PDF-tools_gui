@@ -1,4 +1,4 @@
-# scroll is working and image name displayed on bottom but cant append new images
+# scroll works and append also works
 import tkinter as tk
 from tkinter import filedialog
 from PIL import Image, ImageTk
@@ -44,6 +44,10 @@ class ImageDisplayApp:
         self.listbox_scrollbar.pack(side=tk.LEFT, fill=tk.Y)
         self.listbox.config(yscrollcommand=self.listbox_scrollbar.set)
 
+        # Track the current row and column positions
+        self.current_row = 0
+        self.current_col = 0
+
     def open_images(self):
         file_paths = filedialog.askopenfilenames(
             title="Select Images",
@@ -54,21 +58,14 @@ class ImageDisplayApp:
             self.display_images(file_paths)
 
     def display_images(self, file_paths):
-        # Clear existing images and names
-        for label in self.image_labels:
-            label.destroy()
-        self.listbox.delete(0, tk.END)
-
         # Load and display new images and names
-        self.image_labels = []
-        self.image_names = []
         for i, file_path in enumerate(file_paths):
             img = Image.open(file_path)
             img = img.resize((200, 200), Image.ANTIALIAS if hasattr(Image, 'ANTIALIAS') else Image.BICUBIC)
             tk_img = ImageTk.PhotoImage(img)
 
             label = tk.Label(self.image_frame, image=tk_img, text=file_path.split("/")[-1], compound=tk.TOP)
-            label.grid(row=i // 3, column=i % 3, padx=5, pady=10)
+            label.grid(row=self.current_row, column=self.current_col, padx=5, pady=10)
 
             label.image = tk_img  # Keep a reference to avoid garbage collection
             self.image_labels.append(label)
@@ -77,6 +74,12 @@ class ImageDisplayApp:
             image_name = file_path.split("/")[-1]
             self.listbox.insert(tk.END, image_name)
             self.image_names.append(image_name)
+
+            # Update current row and column positions
+            self.current_col += 1
+            if self.current_col == 3:
+                self.current_row += 1
+                self.current_col = 0
 
         self.image_frame.update_idletasks()  # Update the canvas with the new images
         self.canvas.config(scrollregion=self.canvas.bbox("all"))  # Adjust the scroll region
@@ -88,4 +91,3 @@ if __name__ == "__main__":
     root = tk.Tk()
     app = ImageDisplayApp(root)
     root.mainloop()
-
