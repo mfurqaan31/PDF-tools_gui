@@ -8,12 +8,12 @@ do only merging, splitting, pdf to image, insert or delete page, encrypt pdf.
 
 check all the progs i they run on all os.
 
-Do this quickly
-
 check the following:
 
-if no pdf selected it must exit
+if no pdf selected it must exit.
 
-if pdf or image is encrypted it must quit
+if pdf or image is encrypted it must quit.
 
 in split_pdf, img_to_pdf everything must be in center and fixed gui window like in merge pdf inshort all progs must have fixed window geometry.
+
+Do this quickly and host it
