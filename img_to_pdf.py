@@ -1,4 +1,4 @@
-# gap issue fixed but make pdf needs to get fixed
+# move issue fixed, make pdf needs to be done and open file dialog 1st
 import tkinter as tk
 from tkinter import filedialog
 from PIL import Image, ImageTk
@@ -12,9 +12,10 @@ class ImageDisplayApp:
         self.image_labels = []
         self.image_names = []
 
-        # Create Open File Dialog Button
-        self.open_button = tk.Button(self.master, text="Open Images", command=self.open_images)
-        self.open_button.pack(pady=10)
+        # Store the selected label
+        self.selected_label = None
+
+
 
         # Create Frames for left and right halves
         self.left_frame = tk.Frame(self.master)
@@ -63,14 +64,9 @@ class ImageDisplayApp:
         self.current_row = 0
         self.current_col = 0
 
-    def open_images(self):
-        file_paths = filedialog.askopenfilenames(
-            title="Select Images",
-            filetypes=[("Image files", "*.png *.jpg *.jpeg *.JPG *.PNG *.JPEG")]
-        )
+        self.master.bind("<Left>", lambda event: self.move_up())
+        self.master.bind("<Right>", lambda event: self.move_down())
 
-        if file_paths:
-            self.display_images(file_paths)
 
     def display_images(self, file_paths):
         # Load and display new images and names
@@ -155,17 +151,30 @@ class ImageDisplayApp:
             # Update the canvas layout without creating gaps
             self.rearrange_images()
 
-    def move_up(self):
-        selected_index = self.listbox.curselection()
-        if selected_index and selected_index[0] > 0:
-            selected_index = selected_index[0]
-            self.swap_items(selected_index, selected_index - 1)
+    def move_up(self, positions=1):
+        if self.selected_label and self.selected_label in self.image_labels:
+            selected_index = self.image_labels.index(self.selected_label)
+            new_index = max(0, selected_index - positions)
+            self.move_item(selected_index, new_index)
 
-    def move_down(self):
-        selected_index = self.listbox.curselection()
-        if selected_index and selected_index[0] < self.listbox.size() - 1:
-            selected_index = selected_index[0]
-            self.swap_items(selected_index, selected_index + 1)
+    def move_down(self, positions=1):
+        if self.selected_label and self.selected_label in self.image_labels:
+            selected_index = self.image_labels.index(self.selected_label)
+            new_index = min(len(self.image_labels) - 1, selected_index + positions)
+            self.move_item(selected_index, new_index)
+
+    def move_item(self, from_index, to_index):
+        # Move image name in the listbox
+        moved_name = self.image_names.pop(from_index)
+        self.image_names.insert(to_index, moved_name)
+        self.listbox.delete(0, tk.END)
+        for image_name in self.image_names:
+            self.listbox.insert(tk.END, image_name)
+
+        # Move label in the canvas
+        moved_label = self.image_labels.pop(from_index)
+        self.image_labels.insert(to_index, moved_label)
+        self.rearrange_images()
 
     def rearrange_images(self):
         # Clear the canvas
@@ -184,16 +193,18 @@ class ImageDisplayApp:
         self.image_frame.update_idletasks()
         self.canvas.config(scrollregion=self.canvas.bbox("all"))
 
-    def swap_items(self, index1, index2):
-        # Swap image names in the listbox
-        self.image_names[index1], self.image_names[index2] = self.image_names[index2], self.image_names[index1]
-        self.listbox.delete(0, tk.END)
-        for image_name in self.image_names:
-            self.listbox.insert(tk.END, image_name)
+    def bind_listbox_select(self):
+        self.listbox.bind('<<ListboxSelect>>', self.listbox_select_callback)
 
-        # Swap labels in the canvas
-        self.image_labels[index1], self.image_labels[index2] = self.image_labels[index2], self.image_labels[index1]
-        self.rearrange_images()
+    def listbox_select_callback(self, event):
+        selected_index = self.listbox.curselection()
+        if selected_index:
+            selected_index = selected_index[0]
+            selected_image_name = self.listbox.get(selected_index)
+            for label in self.image_labels:
+                if label.cget("text") == selected_image_name:
+                    self.selected_label = label
+                    break
 
     def make_pdf(self):
         if not self.image_names:
@@ -213,5 +224,5 @@ class ImageDisplayApp:
 if __name__ == "__main__":
     root = tk.Tk()
     app = ImageDisplayApp(root)
+    app.bind_listbox_select()  # Bind the listbox select callback
     root.mainloop()
-
