@@ -1,4 +1,5 @@
 # only encrypt image and gui theme needs to be fixed
+# if the buttons are clicked for long time the order of the image is disturbed fix it very important and also scroll of listbox auto goes up
 import tkinter as tk
 from tkinter import filedialog, messagebox
 from PIL import Image, ImageTk
