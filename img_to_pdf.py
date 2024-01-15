@@ -1,4 +1,4 @@
-# move issue fixed, make pdf needs to be done and open file dialog 1st
+# move issue fixed,removed open image button, make pdf needs to be done, open file dialog 1st, encrypted image
 import tkinter as tk
 from tkinter import filedialog
 from PIL import Image, ImageTk
@@ -207,19 +207,7 @@ class ImageDisplayApp:
                     break
 
     def make_pdf(self):
-        if not self.image_names:
-            print("No images selected. Nothing to create.")
-            return
-
-        pdf = FPDF()
-        for image_name in self.image_names:
-            pdf.add_page()
-            image_path = [path for path in filedialog.askopenfilenames(filetypes=[("Image files", "*.png *.jpg *.jpeg *.JPG *.PNG *.JPEG")]) if image_name in path][0]
-            pdf.image(image_path, 10, 10, 190)
-
-        pdf_file_path = filedialog.asksaveasfilename(defaultextension=".pdf", filetypes=[("PDF files", "*.pdf")])
-        pdf.output(pdf_file_path)
-        print(f'PDF created and saved as "{pdf_file_path}"')
+        pass
 
 if __name__ == "__main__":
     root = tk.Tk()
