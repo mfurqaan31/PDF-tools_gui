@@ -1,5 +1,5 @@
-# only encrypt image and the scrollbar of the listbox needs to be fixed
-# multiple long click issue fixed and file dialog is opening 1st
+# multiple long click issue fixed and file dialog is opening 1st and also scrollbar issue fixed
+
 import tkinter as tk
 from tkinter import filedialog, messagebox
 from PIL import Image, ImageTk
@@ -70,6 +70,7 @@ class ImageDisplayApp:
 
         self.master.bind("<Up>", lambda event: self.move_up())
         self.master.bind("<Down>", lambda event: self.move_down())
+        self.bind_listbox_select()
 
     def display_images(self, file_paths):
         # Load and display new images and names
@@ -157,7 +158,6 @@ class ImageDisplayApp:
             self.rearrange_images()
 
     def move_up(self, positions=1):
-        
         def reorder_pdf_files(old_index, new_index):
             image_location.insert(new_index, image_location.pop(old_index))
 
@@ -166,20 +166,26 @@ class ImageDisplayApp:
             new_index = max(0, selected_index - positions)
             if selected_index != new_index:
                 self.move_item(selected_index, new_index)
-                reorder_pdf_files(selected_index, selected_index - 1)
+                reorder_pdf_files(selected_index, new_index)
+                self.listbox.select_clear(0, tk.END)  # Clear previous selection
+                self.listbox.select_set(new_index)  # Select the new index
+                self.listbox.yview(new_index)  # Scroll the listbox to show the selected item
+
 
 
     def move_down(self, positions=1):
-        
         def reorder_pdf_files(old_index, new_index):
             image_location.insert(new_index, image_location.pop(old_index))
-        
+
         if self.selected_label and self.selected_label in self.image_labels:
             selected_index = self.image_labels.index(self.selected_label)
             new_index = min(len(self.image_labels) - 1, selected_index + positions)
             if selected_index != new_index:
                 self.move_item(selected_index, new_index)
-                reorder_pdf_files(selected_index, selected_index + 1)
+                reorder_pdf_files(selected_index, new_index)
+                self.listbox.select_clear(0, tk.END)  # Clear previous selection
+                self.listbox.select_set(new_index)  # Select the new index
+                self.listbox.yview(new_index)  # Scroll the listbox to show the selected item
     
 
     def move_item(self, from_index, to_index):
@@ -214,6 +220,7 @@ class ImageDisplayApp:
 
     def bind_listbox_select(self):
         self.listbox.bind('<<ListboxSelect>>', self.listbox_select_callback)
+
 
     def listbox_select_callback(self, event):
         selected_index = self.listbox.curselection()
@@ -298,6 +305,7 @@ if __name__ == "__main__":
     
     image_location=list(file_paths)
     root = tk.Tk()
+    root.resizable(False, False)
     app = ImageDisplayApp(root)
     app.bind_listbox_select()  # Bind the listbox select callback
     app.display_images(file_paths)  # Display the selected images
