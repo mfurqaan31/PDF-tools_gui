@@ -19,3 +19,6 @@ in split_pdf, img_to_pdf everything must be in center and fixed gui window like 
 Do this quickly and host it.
 
 all the buttons in the codes must be of same size.
+
+very very very very important
+fixx insert delete page urgent
