@@ -138,7 +138,7 @@ class PDFEditorApp:
     def add_page(self):
 
         if self.pdf_document is not None:
-            file_path = filedialog.askopenfilename(filetypes=[("Image files", "*.jpg *.jpeg *.png *.bmp *.gif *.tiff")])
+            file_path = filedialog.askopenfilename(filetypes=[("Image files", "*.png *.jpg *.jpeg *.JPG *.PNG *.JPEG")])
             if file_path:
                 self.insert_page(file_path)
                 self.show_page()
@@ -147,7 +147,7 @@ class PDFEditorApp:
     def add_to_last_page(self):
 
         if self.pdf_document is not None:
-            file_path = filedialog.askopenfilename(filetypes=[("Image files", "*.jpg *.jpeg *.png *.bmp *.gif *.tiff")])
+            file_path = filedialog.askopenfilename(filetypes=[("Image files", "*.png *.jpg *.jpeg *.JPG *.PNG *.JPEG")])
             if file_path:
                 self.insert_page(file_path, page_index=len(self.pdf_document))
                 self.show_page()
@@ -231,6 +231,9 @@ class PDFEditorApp:
 if __name__ == "__main__":
 
     root = tk.Tk()
+    screen_width = root.winfo_screenwidth()
+    screen_height = root.winfo_screenheight()
+    root.geometry(f"{screen_width}x{screen_height}+0+0")
     app = PDFEditorApp(root)
     app.root.withdraw()
     app.load_pdf()
