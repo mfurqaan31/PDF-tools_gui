@@ -227,7 +227,11 @@ class PDFEditorApp:
                 self.pdf_document.close()
                 messagebox.showinfo("Message", "PDF has been saved successfully as "+save_path.split("/")[-1] + " at " + os.path.dirname(save_path))
                 self.root.quit()
-
+        
+            else:
+                messagebox.showinfo("Error", "No Location Selected")
+                return
+            
 if __name__ == "__main__":
 
     root = tk.Tk()
