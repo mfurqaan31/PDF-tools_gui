@@ -9,7 +9,9 @@ import zipfile
 from io import BytesIO
 
 def check_encrypted(pdf_path):
-
+    if not pdf_path:
+        messagebox.showinfo("Error","No PDF selected, exiting")
+        exit()
     is_encrypted = False
     with open(pdf_path, 'rb') as pdf_file:
         pdf_reader = PyPDF2.PdfReader(pdf_file)
