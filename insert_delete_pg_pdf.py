@@ -1,3 +1,4 @@
+# main code
 import fitz
 import tkinter as tk
 from tkinter import filedialog, messagebox
@@ -6,6 +7,7 @@ import os
 import PyPDF2
 
 class PDFEditorApp:
+
     def __init__(self, root):
         self.root = root
         self.root.title("PDF Editor")
@@ -18,18 +20,19 @@ class PDFEditorApp:
         self.create_gui()
 
     def create_gui(self):
+
         self.button_frame = tk.Frame(self.root, bg="black")
         self.button_frame.pack(side=tk.RIGHT, fill=tk.Y, padx=10, pady=10)
         self.root.bind("<Left>", lambda event: self.prev_page())
         self.root.bind("<Right>", lambda event: self.next_page())
         self.root.bind("<Return>", lambda event: self.go_to_page())
 
-        self.prev_button = tk.Button(self.button_frame, text="Previous Page", command=self.prev_page, bg="black", fg="white")
-        self.next_button = tk.Button(self.button_frame, text="Next Page", command=self.next_page, bg="black", fg="white")
-        self.add_page_button = tk.Button(self.button_frame, text="Add Page", command=self.add_page, bg="black", fg="white")
-        self.add_to_last_page_button = tk.Button(self.button_frame, text="Add to Last Page", command=self.add_to_last_page, bg="black", fg="white")
-        self.delete_page_button = tk.Button(self.button_frame, text="Delete Page", command=self.delete_page, bg="black", fg="white")
-        self.make_pdf_button = tk.Button(self.button_frame, text="Make PDF", command=self.save_pdf, bg="black", fg="white")
+        self.prev_button = tk.Button(self.button_frame, text="Previous Page", command=self.prev_page, bg="white", fg="black")
+        self.next_button = tk.Button(self.button_frame, text="Next Page", command=self.next_page, bg="white", fg="black")
+        self.add_page_button = tk.Button(self.button_frame, text="Add Page", command=self.add_page, bg="white", fg="black")
+        self.add_to_last_page_button = tk.Button(self.button_frame, text="Add to Last Page", command=self.add_to_last_page, bg="white", fg="black")
+        self.delete_page_button = tk.Button(self.button_frame, text="Delete Page", command=self.delete_page, bg="white", fg="black")
+        self.make_pdf_button = tk.Button(self.button_frame, text="Make PDF", command=self.save_pdf, bg="white", fg="black")
 
         self.prev_button.pack(fill=tk.X, pady=5)
         self.next_button.pack(fill=tk.X, pady=5)
@@ -38,31 +41,31 @@ class PDFEditorApp:
         self.delete_page_button.pack(fill=tk.X, pady=5)
         self.make_pdf_button.pack(fill=tk.X, pady=5)
 
-        self.go_to_page_button = tk.Button(self.button_frame, text="Go to Page", command=self.go_to_page, bg="black", fg="white")
+        self.go_to_page_button = tk.Button(self.button_frame, text="Go to Page", command=self.go_to_page, bg="white", fg="black")
         self.go_to_page_button.pack(side=tk.BOTTOM, fill=tk.X, pady=5)
         
         
         self.page_entry_var = tk.StringVar()
-        self.page_entry = tk.Entry(self.button_frame, textvariable=self.page_entry_var, bg="black", fg="white")
+        self.page_entry = tk.Entry(self.button_frame, textvariable=self.page_entry_var, bg="white", fg="black")
         self.page_entry.pack(side=tk.BOTTOM, fill=tk.X, pady=5)
 
-        self.page_entry_label = tk.Label(self.button_frame, text="Enter Page Number:", bg="black", fg="white")
+        self.page_entry_label = tk.Label(self.button_frame, text="Enter Page Number:", bg="white", fg="black")
         self.page_entry_label.pack(side=tk.BOTTOM, fill=tk.X, pady=5)
-
         
 
-        self.page_number_label = tk.Label(self.button_frame, text="Page 1", bg="black", fg="white")
+        self.page_number_label = tk.Label(self.button_frame, text="Page 1", bg="white", fg="black")
         self.page_number_label.pack(side=tk.BOTTOM, fill=tk.X, pady=5)
 
         self.canvas = tk.Canvas(self.root, bg="black")
         self.canvas.pack(side=tk.LEFT, expand=True, fill=tk.BOTH)
 
     def load_pdf(self):
+
         file_path = filedialog.askopenfilename(filetypes=[("PDF files", "*.pdf")])
         is_encrypted = False
 
         if not file_path:
-            print("No PDF selected.")
+            messagebox.showinfo("Error","No PDF selected, exiting")
             self.root.destroy()
             exit()
         
@@ -71,7 +74,7 @@ class PDFEditorApp:
             is_encrypted = pdf_reader.is_encrypted
 
         if is_encrypted:
-            print("PDF is already encrypted.")
+            messagebox.showinfo("Error","The selected PDF is encrypted hence, exiting")
             self.root.destroy()
             exit()
 
@@ -83,6 +86,7 @@ class PDFEditorApp:
             self.root.deiconify()
 
     def show_page(self):
+
         if self.pdf_document is not None:
             page = self.pdf_document.load_page(self.current_page)
             pix = page.get_pixmap(matrix=fitz.Matrix(1, 1))
@@ -95,23 +99,27 @@ class PDFEditorApp:
             self.canvas.create_image(0, 0, anchor=tk.NW, image=self.tk_image)
 
     def update_page_number_label(self):
+
         if self.pdf_document is not None:
             total_pages = len(self.pdf_document)
             self.page_number_label.config(text=f"Page {self.current_page + 1}/{total_pages}")
 
     def prev_page(self):
+
         if self.current_page > 0:
             self.current_page -= 1
             self.show_page()
             self.update_page_number_label()
 
     def next_page(self):
+
         if self.pdf_document is not None and self.current_page < len(self.pdf_document) - 1:
             self.current_page += 1
             self.show_page()
             self.update_page_number_label()
 
     def go_to_page(self):
+
         if self.pdf_document is not None:
             try:
                 page_number = int(self.page_entry_var.get())
@@ -128,6 +136,7 @@ class PDFEditorApp:
                 self.page_entry.delete(0, tk.END)
 
     def add_page(self):
+
         if self.pdf_document is not None:
             file_path = filedialog.askopenfilename(filetypes=[("Image files", "*.jpg *.jpeg *.png *.bmp *.gif *.tiff")])
             if file_path:
@@ -136,6 +145,7 @@ class PDFEditorApp:
                 self.update_page_number_label()
 
     def add_to_last_page(self):
+
         if self.pdf_document is not None:
             file_path = filedialog.askopenfilename(filetypes=[("Image files", "*.jpg *.jpeg *.png *.bmp *.gif *.tiff")])
             if file_path:
@@ -144,26 +154,43 @@ class PDFEditorApp:
                 self.update_page_number_label()
 
     def delete_all(self):
-        if self.pdf_document is not None and len(self.pdf_document) == 1:
-            self.pdf_document.close()
-            self.root.quit()
+
+        if self.pdf_document is not None:
+            total_pages = len(self.pdf_document)
+            if total_pages == 1:
+                messagebox.showinfo("All Pages Deleted", "All pages have been deleted. Quitting the application.")
+                self.pdf_document.close()
+                self.root.quit()
+            else:
+                remaining_images = len(self.temp_images) - total_pages
+                if remaining_images == 0:
+                    messagebox.showinfo("Images Remaining", f"There are {remaining_images} images remaining. Quitting the application.")
+                self.pdf_document.close()
+                self.root.quit()
 
     def delete_page(self):
+
         if self.pdf_document is not None:
             if len(self.pdf_document) > 0:
                 self.pdf_document.delete_page(self.current_page)
                 if self.current_page < len(self.temp_images):
                     self.temp_images.pop(self.current_page)
+
                 if self.current_page == len(self.pdf_document):
                     self.current_page -= 1
-                self.show_page()
-                self.update_page_number_label()
-                self.delete_all()
+
+                if len(self.pdf_document) > 0:
+                    self.show_page()
+                    self.update_page_number_label()
+                else:
+                    self.delete_all()
 
     def insert_page(self, image_path, page_index=None):
+
         if image_path:
             if page_index is None:
                 page_index = self.current_page
+
             new_page = self.pdf_document.new_page(page_index, width=500, height=700)
             rect = fitz.Rect(0, 0, 500, 700)
 
@@ -181,26 +208,28 @@ class PDFEditorApp:
 
             image_pixmap = fitz.Pixmap(image_path)
             new_page.insert_image(rect, pixmap=image_pixmap)
+
             temp_image = Image.open(image_path)
             self.temp_images.insert(page_index, temp_image)
 
+
+
     def save_pdf(self):
+
         if self.pdf_document is not None:
-            default_file_name = "output.pdf"
             save_path = filedialog.asksaveasfilename(
                 filetypes=[("PDF files", "*.pdf")],
                 defaultextension=".pdf",
-                initialfile=default_file_name,
-                initialdir=os.path.expanduser("~\\Downloads")
             )
 
             if save_path:
                 self.pdf_document.save(save_path)
                 self.pdf_document.close()
-                messagebox.showinfo("PDF Saved", "PDF has been saved successfully.")
+                messagebox.showinfo("Message", "PDF has been saved successfully as "+save_path.split("/")[-1] + " at " + os.path.dirname(save_path))
                 self.root.quit()
 
 if __name__ == "__main__":
+
     root = tk.Tk()
     app = PDFEditorApp(root)
     app.root.withdraw()
