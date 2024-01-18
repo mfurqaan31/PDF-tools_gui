@@ -9,9 +9,7 @@ import zipfile
 from io import BytesIO
 
 def check_encrypted(pdf_path):
-    if not pdf_path:
-        messagebox.showinfo("Error","No PDF selected, exiting")
-        exit()
+        
     is_encrypted = False
     with open(pdf_path, 'rb') as pdf_file:
         pdf_reader = PyPDF2.PdfReader(pdf_file)
@@ -46,13 +44,15 @@ def select_pdf_and_save_zip():
     root.withdraw()
 
     file_path = filedialog.askopenfilename(filetypes=[("PDF files", "*.pdf")])
-    check_encrypted(file_path)
 
     if file_path:
+
+        check_encrypted(file_path)
         zip_filename = filedialog.asksaveasfilename(defaultextension=".zip", filetypes=[("ZIP files", "*.zip")])
 
         if zip_filename:
             convert_pdf_to_zip(file_path, zip_filename)
+        
         else:
             messagebox.showinfo("Message", "No Location Selected")
             exit()
