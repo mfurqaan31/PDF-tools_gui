@@ -129,9 +129,7 @@ class PDFSplitterApp:
         else:
             zip_filename = output_folder
             with ZipFile(zip_filename, 'w') as zipf:
-                for i, (from_page_entry, to_page_entry
-
-, _) in enumerate(self.page_ranges):
+                for i, (from_page_entry, to_page_entry, _) in enumerate(self.page_ranges):
                     pdf_filename = os.path.join(output_folder_path, f"Range_{i + 1}.pdf")
                     zipf.write(pdf_filename, os.path.basename(pdf_filename))
             shutil.rmtree(output_folder_path)
