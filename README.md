@@ -2,7 +2,7 @@
 
 Website must work on mobile.
 
-do only merging, splitting, pdf to image, insert or delete page, encrypt pdf.
+do only merging, img to pdf, pdf to img, spliting, insert delete page.
 
 check the following:
 
