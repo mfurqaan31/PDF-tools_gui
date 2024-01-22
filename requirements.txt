@@ -2,3 +2,5 @@ tkinter
 reportlab
 Pillow
 fpdf
+PyPDF2
+PyMuPDF
