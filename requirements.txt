@@ -1,7 +1,1 @@
-tkinter
-docx2pdf
-PyPDF2
-Pillow
-fitz
-PyMuPDF
-pdf2docx
+
