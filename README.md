@@ -10,4 +10,6 @@ check the following:
 
 * if pdf or image is encrypted it must quit.
 
+* if user quits the window it must display a meaage box and then quit.
+
 Do this quickly and host it.
