@@ -13,3 +13,5 @@ check the following:
 * if user quits the window it must display a meaage box and then quit.
 
 Do this quickly and host it.
+
+shift to streamlit
